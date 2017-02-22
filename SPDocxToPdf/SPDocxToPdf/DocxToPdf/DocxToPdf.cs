@@ -45,6 +45,7 @@ namespace SPDocxToPdf.DocxToPdf
                         var filePdf = GetAllFile(pathSave).Single(f => Path.GetExtension(f).ToLower().Equals(".pdf") &&
                             f.Replace(Path.GetExtension(f), "").ToLower() == spFile.Name.Replace(Path.GetExtension(spFile.Name), "").ToLower());
                         Upload(filePdf, properties.List.Title, properties.OpenSite());
+                        DeleteAllFiles(pathSave);
                     }
                 });
             }
@@ -85,29 +86,55 @@ namespace SPDocxToPdf.DocxToPdf
                     }
 
                     SPFolder myLibrary = spWeb.Folders[documentLibraryName];
-                    bool replaceExistingFiles = true;
-                    string fileName = Path.GetFileName(fullPath);
-                    FileStream fileStream = File.OpenRead(fullPath);
-                    SPFile spfile = myLibrary.Files.Add(fileName, fileStream, replaceExistingFiles);
-                    myLibrary.Update();
+                    if(myLibrary != null)
+                    {
+                        bool replaceExistingFiles = true;
+                        string fileName = Path.GetFileName(fullPath);
+                        FileStream fileStream = File.OpenRead(fullPath);
+                        SPFile spfile = myLibrary.Files.Add(fileName, fileStream, replaceExistingFiles);
+                        myLibrary.Update();
+                    }
                 }
             }
         }
 
         private List<string> GetAllFile(string targetDirectory)
         {
-            List<string> AllFile = new List<string>();
-            // Process the list of files found in the directory.
-            string[] fileEntries = Directory.GetFiles(targetDirectory);
-            foreach (string fileName in fileEntries)
+            try
             {
-                AllFile.Add(Path.GetFullPath(fileName));
+                List<string> AllFile = new List<string>();
+                // Process the list of files found in the directory.
+                string[] fileEntries = Directory.GetFiles(targetDirectory);
+                foreach (string fileName in fileEntries)
+                {
+                    AllFile.Add(Path.GetFullPath(fileName));
+                }
+
+                // Recurse into subdirectories of this directory.
+                string[] subdirectoryEntries = Directory.GetDirectories(targetDirectory);
+
+                return AllFile;
             }
+            catch (DirectoryNotFoundException dirNotFound)
+            {
+                throw dirNotFound;
+            }
+        }
 
-            // Recurse into subdirectories of this directory.
-            string[] subdirectoryEntries = Directory.GetDirectories(targetDirectory);
-
-            return AllFile;
+        private void DeleteAllFiles(string diretorio)
+        {
+            try
+            {
+                var files = GetAllFile(diretorio);
+                foreach (var file in files)
+                {
+                    File.Delete(file);
+                }
+            }
+            catch (DirectoryNotFoundException dirNotFound)
+            {
+                throw dirNotFound;
+            }         
         }
 
         private void ConvertToPDF(string path)
