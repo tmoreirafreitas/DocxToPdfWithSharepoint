@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="5eafdcf9-79b6-4b2d-a16c-955959a2cafe" solutionId="5eafdcf9-79b6-4b2d-a16c-955959a2cafe" resetWebServer="false" sharePointProductVersion="15.0" name="SPDocxToPdf" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel">
+  <features>
+    <featureReference itemId="04ffe72f-827b-4ae7-8fa6-123707d93a9f" />
+  </features>
+</package>
